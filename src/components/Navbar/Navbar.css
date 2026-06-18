@@ -13,7 +13,7 @@
 .navbar-left{
     display: flex;
     align-items: center;
-    /* gap: 50%; */
+   
 }
 
 .navbar-left img {
@@ -83,3 +83,4 @@
 .nav-dark{
     background: #141414;
 }
+

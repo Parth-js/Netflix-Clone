@@ -12,11 +12,11 @@ const TitleCards = ({title, category}) => {
   const cardsRef = useRef();
 
   // form the TMDB
-  const options = {
+const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlY2Q0NGRkNDc5MmE1NDU2MmM0NTYwNmRjMTM0MWE0MiIsIm5iZiI6MTc4MDU4NDA2OC4xOCwic3ViIjoiNmEyMThlODQzNWQwYTQ5ODRhMzM0NTllIiwic2NvcGVzIjpbImFwaV9yZWFkIl0sInZlcnNpb24iOjF9.7Qt5Z1ggTbWxuNDVdN-qSSyPUhKzIxC2ZtYws383KB0'
+    Authorization: `Bearer ${import.meta.env.VITE_TMDB_BEARER_TOKEN}`
   }
 };
 
@@ -28,16 +28,28 @@ const handleWheel = (event) =>{
     cardsRef.current.scrollLeft += event.deltaY 
 }
 
-useEffect(()=>{
+useEffect(() => {
 
-  fetch(`https://api.themoviedb.org/3/movie/${category?category:"now_playing"}?language=en-US&page=1`, options)
-  .then(res => res.json())
-  .then(res => setApiData(res.results))
-  .catch(err => console.error(err));
+  fetch(
+    `${import.meta.env.VITE_TMDB_BASE_URL}/movie/${
+      category ? category : "now_playing"
+    }?language=en-US&page=1`,
+    options
+  )
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      setApiData(res.results);
+    })
+    .catch(err => console.error(err));
 
+  cardsRef.current.addEventListener("wheel", handleWheel);
 
-  cardsRef.current.addEventListener('wheel',handleWheel);
-},[])
+  return () => {
+    cardsRef.current?.removeEventListener("wheel", handleWheel);
+  };
+
+}, [category]);
 
   return (
     <div className='title-cards'>
@@ -46,7 +58,10 @@ useEffect(()=>{
       <div className="card-list" ref={cardsRef}>
         {apiData.map((card,index)=>{
           return <Link to={`/player/${card.id}`} className="card" key={index}>
-            <img src={`https://image.tmdb.org/t/p/w500`+card.backdrop_path} alt="" />
+            <img
+  src={`${import.meta.env.VITE_TMDB_IMAGE_URL}${card.backdrop_path}`}
+  alt={card.original_title}
+/>
             <p>{card.original_title}</p>
           </Link>
         })}
