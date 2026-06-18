@@ -12,6 +12,7 @@ const TitleCards = ({title, category}) => {
   const cardsRef = useRef();
 
   // form the TMDB
+  
 const options = {
   method: 'GET',
   headers: {
